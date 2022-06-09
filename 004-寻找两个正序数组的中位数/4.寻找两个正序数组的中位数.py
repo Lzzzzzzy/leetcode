@@ -67,29 +67,37 @@ class Solution:
         if len(nums1) > len(nums2):
             nums1, nums2 = nums2, nums1
 
+        # 当Nums1为空时,直接取nums2的第k-1个元素
         if not nums1:
             return nums2[k - 1]
 
-        if k < 2:
+        # 当k=1时,返回两个列表中第0个元素的值即可
+        if k == 1:
             return min(nums1[0], nums2[0])
 
+        # 二分法,i和j考虑边界情况
         half_k = math.floor(k / 2)
         i, j = min(half_k, len(nums1)) - 1, min(half_k, len(nums2)) - 1
 
+        # 每次排除的元素都直接截掉,用新数组找k,k做相应变化
+        # todo: 此处可优化,不新生成数组,降低空间复杂度
         if nums1[i] > nums2[j]:
             k -= j + 1
             nums2 = [] if j == len(nums2) else nums2[j + 1 :]
         else:
             k -= i + 1
             nums1 = [] if i == len(nums1) else nums1[i + 1 :]
+        # 递归
         return self.getKth(nums1, nums2, k)
 
     def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
         len_sum = len(nums1) + len(nums2)
         k = math.ceil(len_sum / 2)
 
+        # 奇数时取第K个数
         if len_sum % 2 == 1:
             return self.getKth(nums1, nums2, k)
+        # 偶数时取第K个和K+1个数,两数之和/2
         num1 = self.getKth(nums1, nums2, k)
         num2 = self.getKth(nums1, nums2, k + 1)
         return (num1 + num2) / 2
